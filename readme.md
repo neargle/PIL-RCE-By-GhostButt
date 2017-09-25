@@ -114,7 +114,59 @@ currentdevice null false mark /OutputFile (%pipe%touch /tmp/aaaaa)
 
 ## 真实环境（伪）和复现
 
-我使用之前写的的demo函数和Flask file-upload-sample写了一个简单的 Web app:[app.py](https://github.com/neargle/PIL-RCE-By-GhostButt/blob/master/src/app.py)，使这个本地命令执行变成一个远程命令执行。考虑到在 Windows 上面安装 PIL 和 GhostScript 可能会比较费劲，这里给大家提供一个 [docker环境](https://github.com/neargle/PIL-RCE-By-GhostButt)。
+我使用之前写的的demo函数和Flask file-upload-sample写了一个简单的 Web app:[app.py](https://github.com/neargle/PIL-RCE-By-GhostButt/blob/master/src/app.py)，使这个本地命令执行变成一个远程命令执行。主要代码如下：
+
+```python
+UPLOAD_FOLDER = '/tmp'
+ALLOWED_EXTENSIONS = set(['png'])
+
+app = Flask(__name__)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+def get_img_size(filepath=""):
+    '''获取图片长宽'''
+    if filepath:
+        img = Image.open(filepath)
+        img.load()
+        return img.size
+    return (0, 0)
+
+def allowed_file(filename):
+    '''判断文件后缀是否合法'''
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+@app.route('/', methods=['GET', 'POST'])
+def upload_file():
+    '''文件上传app'''
+    if request.method == 'POST':
+        if 'file' not in request.files:
+            flash('No file part')
+            return redirect(request.url)
+        image_file = request.files['file']
+        if image_file.filename == '':
+            flash('No selected file')
+            return redirect(request.url)
+        if image_file and allowed_file(image_file.filename):
+            filename = secure_filename(image_file.filename)
+            img_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            image_file.save(img_path)
+            height, width = get_img_size(img_path)
+            return '<html><body>the image\'s height : {}, width : {}; </body></html>'\
+                .format(height, width)
+
+    return '''
+    <!doctype html>
+    <title>Upload new File</title>
+    <h1>Upload new File</h1>
+    <form method=post enctype=multipart/form-data>
+      <p><input type=file name=file>
+         <input type=submit value=Upload>
+    </form>
+    '''
+```
+
+考虑到在 Windows 上面安装 PIL 和 GhostScript 可能会比较费劲，这里给大家提供一个 [dockerfile](https://github.com/neargle/PIL-RCE-By-GhostButt/blob/master/Dockerfile)。
 
 ```bash
 git clone https://github.com/neargle/PIL-RCE-By-GhostButt.git && cd PIL-RCE-By-GhostButt
