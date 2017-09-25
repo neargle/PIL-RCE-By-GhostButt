@@ -55,4 +55,4 @@ def upload_file():
     '''
 
 if __name__ == '__main__':
-    app.run(threaded=True, port=8080, host="0.0.0.0")
+    app.run(threaded=True, port=8000, host="0.0.0.0")
