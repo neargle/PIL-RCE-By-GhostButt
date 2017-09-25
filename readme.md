@@ -139,9 +139,9 @@ DNSlog:
 
 ### 如何修复？
 
-一个是升级 GhostScript 版本。当然更新 PIL 的版本并不能解决问题，因为 pip 不会帮你升级GhostScript。
+一个是升级 GhostScript 版本。当然更新 PIL 的版本并不能解决问题，因为 pip 不会帮我们升级GhostScript。
 
-另外在Python代码里面，如果我们的web程序不需要处理 eps 格式, 除了对文件头进行判断，排除 eps 文件之外，借用PIL自带的程序逻辑，也可以避免产生命令执行漏洞。PIL.Image会在`init()`里面加载PIL目录下的所有图片格式的处理方法。
+另外在 Python 代码里面，如果我们的web程序不需要处理 eps 格式，除了对文件头进行判断排除 eps 文件之外，借用PIL自带的程序逻辑，也可以避免产生命令执行漏洞。PIL.Image会在 `init()` 里面加载 PIL 目录下的所有图片格式的处理方法。
 
 ```python
 def init():
@@ -158,7 +158,7 @@ def init():
     ...
 ```
 
-但同时也为我们提供了preinit()方法，该方法只加载 Bmp, Gif, Jpeg, Ppm, Png，这五种格式的处理方法。只需用`open`函数打开图片文件之前,使用 `preinit()`, 并设置 `_initialized` 的值大于等于2，即可避免 Image 调用 GhostScript 去解析 eps 文件：
+但同时也为我们提供了preinit()方法，该方法只加载 Bmp, Gif, Jpeg, Ppm, Png，这五种常见图片格式的处理方法。只需在用`open`函数打开图片文件之前，使用 `preinit()`，并设置 `_initialized` 的值大于等于2，即可避免 Image 调用 GhostScript 去解析 eps 文件：
 
 ```
 Image.preinit()
@@ -174,7 +174,7 @@ Image._initialized = 2
 - `eval(user_input)` : eval等代码执行函数所导致的任意代码执行
 - `subprocess.call(user_input, shell=True)` : popen, subprocess.call等函数所导致的命令执行
 
-但是 PIL 这里出现的问题是比较少被提及的，实际的生产环境中到底常不常见就只能期待大家的反馈了。欢迎任何角度的纠错以及观点独到的建议。感谢祝好。
+PIL 这里出现的问题是比较少被提及的，实际的生产环境中到底常不常见就只能期待大家的反馈了。欢迎任何角度的纠错以及观点独到的建议。感谢祝好。
 
 ## Link
 
