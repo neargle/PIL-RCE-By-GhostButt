@@ -5,3 +5,15 @@
 Paper : https://xianzhi.aliyun.com/forum/read/2163.html
 
 Vulhub: https://github.com/vulhub/vulhub/tree/master/python/PIL-CVE-2017-8291
+
+## Install
+
+```bash
+git clone https://github.com/neargle/PIL-RCE-By-GhostButt.git && cd PIL-RCE-By-GhostButt
+docker-compose build
+docker-compose up -d
+```
+
+View http://localhost:8000/, upload poc.png.
+
+More info : [paper.md](https://github.com/neargle/PIL-RCE-By-GhostButt/blob/master/Exploiting-Python-PIL-Module-Command-Execution-Vulnerability.md)
